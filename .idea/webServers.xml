@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="74e24129-9ab2-4ab0-8819-418bb82b830f" name="NLP">
+        <fileTransfer accessType="SFTP" host="3.239.32.220" port="22" sshConfigId="641f1ca0-6a56-45ae-ad7c-5d4638f4b173" sshConfig="ubuntu@3.239.32.220:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
