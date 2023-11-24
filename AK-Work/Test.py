@@ -3,7 +3,7 @@ import os
 from llama_index import Document, SimpleDirectoryReader
 
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = ''
 
 documents = SimpleDirectoryReader('C:/Users/Aditya Kumar/PycharmProjects/Project-NLP/AK-Work/SampleData/').load_data()
 index = VectorStoreIndex.from_documents(documents)
