@@ -21,5 +21,5 @@ c.	Perform some text analytics on the uploaded document and visualize this for t
 The libraries and packages that we hope to work with are as follows – LangChain, llama-index, transformers, PyTorch, etc. 
 
 ## Repository & Dataset Source
-Dataset Source: Click HERE to view the source of our dataset.
-GitHub Repo: Follow this LINK to view our GitHub repository.
+Dataset Source: Click [HERE](https://www.kaggle.com/datasets/yasirabdaali/arxivorg-ai-research-papers-dataset/code) to view the source of our dataset.
+
