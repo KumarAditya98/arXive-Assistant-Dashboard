@@ -1,7 +1,7 @@
 #%%
 import streamlit as st
 
-# To run the page: streamlit run main.py --server.port 8888
+# To run the page: streamlit run About.py --server.port 8888
 
 #----------------------------------------------
 # Main function

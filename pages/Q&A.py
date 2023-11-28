@@ -1,48 +1,46 @@
 #%%
-# Reference: https://docs.streamlit.io/knowledge-base/tutorials/build-conversational-apps
-# https://blog.streamlit.io/how-to-build-a-llama-2-chatbot/
-# https://blog.streamlit.io/how-to-build-an-llm-powered-chatbot-with-streamlit/
+
+# Credit to: https://www.youtube.com/watch?v=9SBUStfCtmk
+# Credits to: https://www.youtube.com/watch?app=desktop&v=9ISVjh8mdlA
 
 import streamlit as st
-import time
-from Model_QA import generate, side_bar
-import os
+import pandas as pd
+from Chains import construct_chain, wrap_text_preserve_newlines
 
+# Title
 st.title("Arxiv Q&A")
+
+st.snow()
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"], avatar=message.get("avatar", "👤")):
-        st.markdown(message["content"])
+with st.form("my_form"):
+    st.write("Topic of interest:")
+    topic = st.text_input("", key="topic")
+    st.write("Question:")
+    prompt = st.text_input("", key ="prompt")
+    
+    # Every form must have a submit button.
+    st.form_submit_button("Submit")
 
-side_bar()
+if topic:
+    chain = construct_chain(topic = topic)
 
-# Accept user input
-if prompt := st.chat_input("How can I help you?"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    # Add user message to chat history
-    # st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
-    with st.chat_message("user", avatar="👩‍💻"):
-        st.markdown(prompt)
+    llm_response = chain(prompt)
 
-    # Display assistant response in chat message container
+    response = wrap_text_preserve_newlines(llm_response['result'])
+
+    metadata = [[source.metadata['title'], source.metadata['file_path']] for source in llm_response["source_documents"]]
+
+    df = pd.DataFrame(metadata, columns = ["Titles", "URL"])
+
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-        assistant_response = generate(question=prompt)
-        # Simulate stream of response with milliseconds delay
-        for chunk in assistant_response.split():
-            full_response += chunk + " "
-            time.sleep(0.05)
-            # Add a blinking cursor to simulate typing
-            message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
+        st.markdown(response)
+        st.dataframe(df,
+                    column_config = {"URL": st.column_config.LinkColumn("URL")},
+                    hide_index = True)
+    st.session_state.messages.append({"role": "assistant", "content": response}) 
 
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
 
