@@ -1,71 +1,32 @@
 import streamlit as st
 from PyPDF2 import PdfReader
-from langchain.text_splitter import  RecursiveCharacterTextSplitter
-#from streamlit_extras.add_vertical_space import add_vertical_space
-from langchain.embeddings import LlamaCppEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain import HuggingFaceHub
 import pickle
-import os
-from langchain.llms import HuggingFacePipeline
-from langchain.chains.question_answering import load_qa_chain
-from langchain.memory import ConversationBufferMemory
-#from unstructured.partition.auto import partition
-from langchain.chains import ConversationalRetrievalChain
-from transformers import AutoTokenizer
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForDocumentQuestionAnswering, pipeline, AutoModel
-from langchain.chains import RetrievalQA
-from langchain import HuggingFaceHub
-from langchain.chains import ConversationChain
-from langchain.chains.conversation.memory import ConversationBufferMemory
-import langchain
-import chromadb
-
-import os
-import getpass
-
-from langchain.document_loaders import PyPDFLoader  #document loader: https://python.langchain.com/docs/modules/data_connection/document_loaders
-from langchain.text_splitter import RecursiveCharacterTextSplitter  #document transformer: text splitter for chunking
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain import PromptTemplate
-from langchain.vectorstores import Chroma #vector store
-from langchain import HuggingFaceHub  #model hub
+from langchain.vectorstores import Chroma
+from langchain import HuggingFaceHub
 from langchain.chains import RetrievalQA
-
-from langchain.memory import ConversationBufferMemory
-
-#loading the API key
-import getpass
+from langchain.vectorstores import FAISS
+from langchain.chains.question_answering import load_qa_chain
+import time
 import os
 
-
-#loading the API key
-os.environ['HUGGING_FACE_HUB_API_KEY'] = getpass.getpass('Hugging face api key:')
+## Have to add the hugging face api token in the .bashrc file for this to work
 
 
-#with st.sidebar:
-    #st.title("Document Upload - Q&A Chat App")
-template = """
-Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question:
-------
-<ctx>
-{context}
-</ctx>
-------
-<hs>
-{history}
-</hs>
-------
-{question}
-Answer:
-"""
+def genai(retriever, query, context):
+    #repo_id = 'lmsys/fastchat-t5-3b-v1.0'
+    repo_id = 'google/flan-t5-large'
+    llm = HuggingFaceHub(huggingfacehub_api_token=os.getenv("HF_HOME_TOKEN"),
+                         repo_id=repo_id,
+                         model_kwargs={'temperature': 1e-10, 'max_length': 1000})
+    retrieval_chain = RetrievalQA.from_chain_type(llm,chain_type='stuff',retriever=retriever.as_retriever())
+    response = retrieval_chain.run(query).strip()
+    return response
 def main():
-    st.title("Upload Your Document in PDF format.")
+    st.title("Upload Your PDF Document.")
     pdf = st.file_uploader("Upload your PDF", type="pdf")
     if pdf is not None:
-        #pdf_reader = PdfReader(pdf)
         pdf_reader = PdfReader(pdf)
         text = ""
         for page in pdf_reader.pages:
@@ -82,39 +43,39 @@ def main():
             with open(f"{store_name}.pkl","rb") as f:
                 doc_search = pickle.load(f)
         else:
-            doc_search = Chroma.from_documents(docs, embeddings)
+            doc_search = FAISS.from_texts(docs, embedding=embeddings)
             with open(f"{store_name}.pkl","wb") as f:
                 pickle.dump(doc_search,f)
 
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
 
-        query = st.text_input("Ask question about your PDF Document:")
-        if query:
-            st.write(f"You: ", query)
-            docs = doc_search.similarity_search(query, k=3)
-            repo_id = 'lmsys/fastchat-t5-3b-v1.0'  # has 3B parameters: https://huggingface.co/lmsys/fastchat-t5-3b-v1.0
-            llm = HuggingFaceHub(huggingfacehub_api_token=os.environ['HUGGING_FACE_HUB_API_KEY'],
-                                 repo_id=repo_id,
-                                 model_kwargs={'temperature': 1e-10, 'max_length': 1000})
-            prompt = PromptTemplate(
-                input_variables=["history", "context", "question"],
-                template=template,
-            )
-            memory = ConversationBufferMemory(
-                memory_key="history",
-                input_key="question"
-            )
+        # Display chat messages from history on app rerun
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"], avatar=message.get("avatar", "👤")):
+                st.markdown(message["content"])
 
-            retrieval_chain = RetrievalQA.from_chain_type(llm,
-                                                          chain_type='stuff',
-                                                          retriever=doc_search.as_retriever(),
-                                                          chain_type_kwargs={
-                                                              "prompt": prompt,
-                                                              "memory": memory
-                                                          })
-            retrieval_chain.run(query)
-            st.write("Chatbot:",memory.load_memory_variables({'history'}) )
+        # Accept user input
+        if prompt := st.chat_input("How can I help you?"):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user", avatar="👩‍💻"):
+                st.markdown(prompt)
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                full_response = ""
+                context = doc_search.similarity_search(prompt, k=5)
+                assistant_response = genai(doc_search, prompt, context)
+                for chunk in assistant_response.split():
+                    full_response += chunk + " "
+                    time.sleep(0.05)
+                    message_placeholder.markdown(full_response + "▌")
+                message_placeholder.markdown(full_response)
 
-
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            if st.button('Clear Chat'):
+                st.session_state.messages = []
 
 if __name__ == '__main__':
     main()

@@ -2,7 +2,7 @@ import torch
 from transformers import pipeline
 from langchain import PromptTemplate, LLMChain
 from langchain.llms import HuggingFacePipeline
-import  streamlit as st
+import streamlit as st
 generate_text = pipeline(model="databricks/dolly-v2-7b", torch_dtype=torch.bfloat16,
                          trust_remote_code=True, device_map="auto", return_full_text=True)
 

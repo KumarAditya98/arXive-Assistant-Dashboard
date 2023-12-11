@@ -1,6 +1,11 @@
-langchain==0.0.154
+arxiv==2.0.0
+bertopic==0.16.0
+langchain==0.0.348
 PyPDF2==3.0.1
-python-dotenv==1.0.0
-streamlit==1.18.1
-faiss-cpu==1.7.4
-streamlit-extras
+sentence_transformers==2.2.2
+streamlit==1.29.0
+tqdm==4.66.1
+transformers==4.34.1
+unstructured==0.11.2
+unstructured[pdf]
+faiss-gpu
