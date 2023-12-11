@@ -9,5 +9,5 @@ documents = SimpleDirectoryReader('C:/Users/Aditya Kumar/PycharmProjects/Project
 index = VectorStoreIndex.from_documents(documents)
 
 query_engine = index.as_query_engine()
-response = query_engine.query("Summarize this document for me.")
+response = query_engine.query("Explain perceptron learning rule to me.")
 print(response)
