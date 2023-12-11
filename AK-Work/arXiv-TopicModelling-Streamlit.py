@@ -72,12 +72,11 @@ def custom_clean_function(narrative_text: str) -> str:
     )
     return cleaned_text
 
-@st.cache_data(allow_output_mutation=True)
 def get_intertopic_dist_map(topic_model):
     return topic_model.visualize_topics()
-@st.cache_data(allow_output_mutation=True)
+
 def get_topic_keyword_barcharts(topic_model):
-    return topic_model.visualize_barchart(top_n_topics=9, n_words=5, height=800)
+    return topic_model.visualize_barchart(top_n_topics=9, n_words=5, height=400)
 
 def main():
     paper_texts = False
@@ -107,12 +106,14 @@ def main():
         freq = topic_model.get_topic_info();
         st.write(freq.head(10))
 
-        fig1 = get_intertopic_dist_map(topic_model)
-        st.write(fig1)
-
         fig3 = get_topic_keyword_barcharts(topic_model)
-        st.write(fig3)
+        st.plotly_chart(fig3)
 
+        fig1 = get_intertopic_dist_map(topic_model)
+        st.plotly_chart(fig1)
+
+        fig2 = topic_model.visualize_heatmap(n_clusters=5, top_n_topics=10)
+        st.plotly_chart(fig2)
 
 if __name__ == '__main__':
     main()
