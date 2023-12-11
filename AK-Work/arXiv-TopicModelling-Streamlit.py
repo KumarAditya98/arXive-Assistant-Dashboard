@@ -13,8 +13,7 @@ from unstructured.staging.base import (
 from unstructured.cleaners.core import (
     clean,
     remove_punctuation,
-    clean_non_ascii_chars,
-)  # Cleaning Functions
+    clean_non_ascii_chars,)  # Cleaning Functions
 import re  # Create Custom Cleaning Function
 import nltk  # Toolkit for more advanced pre-processing
 from nltk.corpus import stopwords  # list of stopwords to remove
@@ -33,9 +32,7 @@ def get_arxiv_paper_texts(query, max_results = 100):
             query=query,
             max_results=max_results,
             sort_by=arxiv.SortCriterion.Relevance,
-            sort_order=arxiv.SortOrder.Descending,
-        ).results()
-    )
+            sort_order=arxiv.SortOrder.Descending,).results())
 
     paper_texts = []
     for paper in tqdm(arxiv_papers):
@@ -43,9 +40,7 @@ def get_arxiv_paper_texts(query, max_results = 100):
         pdf_file = glob.glob("*.pdf")[0]
         elements = partition(pdf_file)
         isd = convert_to_dict(elements)
-        narrative_texts = [
-            element["text"] for element in isd if element["type"] == "NarrativeText"
-        ]
+        narrative_texts = [element["text"] for element in isd if element["type"] == "NarrativeText"]
         os.remove(pdf_file)
         paper_texts += narrative_texts
     return paper_texts
@@ -55,8 +50,7 @@ def get_arxiv_paper_texts(query, max_results = 100):
 def custom_clean_function(narrative_text: str) -> str:
     stop_words = set(stopwords.words("english"))
     remove_numbers = lambda text: re.sub(
-        r"\d+", "", text
-    )
+        r"\d+", "", text)
     cleaned_text = remove_numbers(narrative_text)
     cleaned_text = clean(
         cleaned_text,

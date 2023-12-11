@@ -13,7 +13,6 @@ import os
 
 ## Have to add the hugging face api token in the .bashrc file for this to work
 
-
 def genai(retriever, query, context):
     #repo_id = 'lmsys/fastchat-t5-3b-v1.0'
     repo_id = 'google/flan-t5-large'
@@ -37,7 +36,6 @@ def main():
             chunk_overlap=200,
             length_function=len)
         docs = splitter.split_text(text)
-
         store_name = pdf.name[:-4]
         if os.path.exists(f"{store_name}.pkl"):
             with open(f"{store_name}.pkl","rb") as f:
