@@ -6,7 +6,7 @@ Run the requirements.txt to install all external dependencies using command: pip
    1. Either open the python file and hard-code your Hugging Face API Token at the required position.
    2. Run these commands on your Unix/Linux Terminal:   
         cd ~    
-        echo 'export HF_HOME_TOKEN="<your-hugging-face-token"' >> ~/.bashrc    
+        echo 'export HF_HOME_TOKEN="<your-hugging-face-token>"' >> ~/.bashrc    
         source ~/.bashrc    
   Upon doing either of these steps, the python file should produce desired result.
 * The arXiv-TopicModelling-Streamlit.py contains the interactive Topic Modelling page. This python file has been fetched into Tyler Wallet's Code section to be used as the page for XAI product offering.
