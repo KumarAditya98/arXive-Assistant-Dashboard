@@ -7,9 +7,18 @@ import streamlit as st
 # Main function
 
 def main():
-    st.title("Arxiv Helper")
+    st.title("One stop shop for learning")
+    st.image("question.jpg")
     st.divider()
     st.subheader("NLP Team 2")
+    
+    """
+    * Arxiv topic modeling
+    * Document upload
+    * Arxiv Q&A
+    * MediumBlink
+    """
+    
     st.caption("By Medhasweta Sen, Aditya Kumar and Tyler Wallett")
     
 if __name__ == "__main__":

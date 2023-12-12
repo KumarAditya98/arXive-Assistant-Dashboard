@@ -23,9 +23,9 @@ with st.form("my_form"):
     prompt = st.text_input("", key ="prompt")
     
     # Every form must have a submit button.
-    st.form_submit_button("Submit")
+    submit = st.form_submit_button("Submit")
 
-if topic:
+if submit != False:
     chain = construct_chain(topic = topic)
 
     llm_response = chain(prompt)
