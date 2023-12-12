@@ -4,7 +4,7 @@ Run the requirements.txt to install all external dependencies using command: pip
 ## Code Files Included in Analysis
 * The Code File named Document-Upload-Q&A-Streamlit-V2.py contains the document upload Q&A utility page. This python file has been fetched into Tyler Wallet's Code section to be used as the page for XAI product offering. An important point to note regarding this project is that it utilizes Hugging Face API token that can be accessed through this [link](https://huggingface.co/settings/tokens). There are two ways that this can be achieved.      
    1. Either open the python file and hard-code your Hugging Face API Token at the required position.
-   2. Run these commands on your Unix/Linux Terminal:
+   2. Run these commands on your Unix/Linux Terminal:   
         cd ~    
         echo 'export HF_HOME_TOKEN="<your-hugging-face-token"' >> ~/.bashrc    
         source ~/.bashrc    
